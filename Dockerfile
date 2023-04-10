@@ -69,3 +69,7 @@ EXPOSE 8080 8443
 USER 1001
 ENTRYPOINT [ "/opt/bitnami/scripts/matomo/entrypoint.sh" ]
 CMD [ "/opt/bitnami/scripts/matomo/run.sh" ]
+
+
+COPY run_* /usr/bin/
+COPY use_matomo_in_rancher.sh /post-init.d/
