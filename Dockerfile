@@ -72,4 +72,4 @@ CMD [ "/opt/bitnami/scripts/matomo/run.sh" ]
 
 
 COPY run_* /usr/bin/
-COPY use_matomo_in_rancher.sh /post-init.d/
+COPY use_matomo_in_rancher.sh /

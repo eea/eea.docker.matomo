@@ -21,8 +21,14 @@ No code updates, only version updates
 
 This repo was made from the bitnami repo, with the following differeces:
 
-1. Added our 3 scripts with the first part copied from ./rootfs/opt/bitnami/scripts/matomo/entrypoint.sh removing the "if" condition
-2. In Dockerfile
+1. Added our 3 scripts 
+
+2. Update `./rootfs/opt/bitnami/scripts/matomo/entrypoint.sh`
+    a. Update if to support run_ commands
+    b. add `/use_matomo_in_rancher.sh`
+
+
+3. In Dockerfile
 
     a. Replace `bullseye` with `buster`
     b. Replace `debian-11` with `debian-10`
@@ -30,7 +36,7 @@ This repo was made from the bitnami repo, with the following differeces:
     d. At the end, add the 2 `COPY` commands
 
            COPY run_* /usr/bin/
-           COPY use_matomo_in_rancher.sh /post-init.d/
+           COPY use_matomo_in_rancher.sh /
 
 
 
