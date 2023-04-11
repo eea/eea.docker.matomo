@@ -21,7 +21,7 @@ sed -i "s/LogFormat \"%h/LogFormat \"%{X-Forwarded-For}i/g" /opt/bitnami/apache/
 
 #fix file permissions
 
-chown -R daemon:root /opt/bitnami/matomo
+chown -R daemon:root /opt/bitnami/matomo
 chown -R daemon:root /opt/bitnami/php
 
 # for matomo 4.14.1
