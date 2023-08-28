@@ -30,8 +30,8 @@ RUN install_packages acl ca-certificates cron curl gzip libaudit1 libbsd0 libbz2
 RUN mkdir -p /tmp/bitnami/pkg/cache/ && cd /tmp/bitnami/pkg/cache/ && \
     COMPONENTS=( \
       "php-8.1.17-2-linux-${OS_ARCH}-debian-10" \
-      "apache-2.4.57-11-linux-${OS_ARCH}-debian-10" \
-      "mysql-client-10.11.5-1-linux-${OS_ARCH}-debian-10" \
+      "apache-2.4.56-1-linux-${OS_ARCH}-debian-10" \
+      "mysql-client-10.6.12-2-linux-${OS_ARCH}-debian-10" \
       "libphp-8.1.17-1-linux-${OS_ARCH}-debian-10" \
       "ini-file-1.4.5-2-linux-${OS_ARCH}-debian-10" \
       "render-template-1.0.5-2-linux-${OS_ARCH}-debian-10" \
