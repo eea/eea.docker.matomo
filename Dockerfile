@@ -31,11 +31,11 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ && cd /tmp/bitnami/pkg/cache/ && \
     COMPONENTS=( \
       "php-8.1.17-2-linux-${OS_ARCH}-debian-10" \
       "apache-2.4.56-1-linux-${OS_ARCH}-debian-10" \
-      "mysql-client-10.6.12-2-linux-${OS_ARCH}-debian-10" \
+      "mysql-client-10.11.6-2-linux-${OS_ARCH}-debian-10" \
       "libphp-8.1.17-1-linux-${OS_ARCH}-debian-10" \
       "ini-file-1.4.5-2-linux-${OS_ARCH}-debian-10" \
       "render-template-1.0.5-2-linux-${OS_ARCH}-debian-10" \
-      "matomo-4.15.1-0-linux-${OS_ARCH}-debian-10" \
+      "matomo-5.0.1-1-linux-${OS_ARCH}-debian-10" \
       "gosu-1.16.0-3-linux-${OS_ARCH}-debian-10" \
     ) && \
     for COMPONENT in "${COMPONENTS[@]}"; do \
