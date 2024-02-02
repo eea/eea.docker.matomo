@@ -6,10 +6,10 @@ LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:buster" \
       org.opencontainers.image.created="2023-03-21T16:14:47Z" \
       org.opencontainers.image.description="Application packaged by VMware, Inc" \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.ref.name="4.15.1-debian-10-r0" \
+      org.opencontainers.image.ref.name="5.0.1-debian-10-r0" \
       org.opencontainers.image.title="matomo" \
       org.opencontainers.image.vendor="VMware, Inc." \
-      org.opencontainers.image.version="4.15.1"
+      org.opencontainers.image.version="5.0.1"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -60,7 +60,7 @@ RUN /opt/bitnami/scripts/matomo/postunpack.sh
 RUN /opt/bitnami/scripts/mysql-client/postunpack.sh
 ENV APACHE_HTTPS_PORT_NUMBER="" \
     APACHE_HTTP_PORT_NUMBER="" \
-    APP_VERSION="4.14.1" \
+    APP_VERSION="5.0.1" \
     BITNAMI_APP_NAME="matomo" \
     PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:/opt/bitnami/apache/bin:/opt/bitnami/mysql/bin:/opt/bitnami/common/bin:$PATH"
 
