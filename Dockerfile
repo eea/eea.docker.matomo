@@ -29,16 +29,17 @@ RUN install_packages acl ca-certificates cron curl gzip libaudit1 libbsd0 libbz2
 
 RUN mkdir -p /tmp/bitnami/pkg/cache/ && cd /tmp/bitnami/pkg/cache/ && \
     COMPONENTS=( \
-      "php-8.1.17-2-linux-${OS_ARCH}-debian-10" \
-      "apache-2.4.56-1-linux-${OS_ARCH}-debian-10" \
+
+      "render-template-1.0.6-7-linux-${OS_ARCH}-debian-11" \
+      "php-8.2.15-0-linux-${OS_ARCH}-debian-10" \
+      "apache-2.4.58-4-linux-${OS_ARCH}-debian-10" \
       "mysql-client-10.11.6-2-linux-${OS_ARCH}-debian-10" \
-      "libphp-8.1.17-1-linux-${OS_ARCH}-debian-10" \
-      "ini-file-1.4.5-2-linux-${OS_ARCH}-debian-10" \
-      "render-template-1.0.5-2-linux-${OS_ARCH}-debian-10" \
+      "libphp-8.2.15-3-linux-${OS_ARCH}-debian-10" \
+      "ini-file-1.4.6-7-linux-${OS_ARCH}-debian-10" \
       "matomo-5.0.1-1-linux-${OS_ARCH}-debian-10" \
-      "gosu-1.16.0-3-linux-${OS_ARCH}-debian-10" \
     ) && \
     for COMPONENT in "${COMPONENTS[@]}"; do \
+      echo $COMPONENT; \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
         curl -SsLf "https://downloads.bitnami.com/files/stacksmith/${COMPONENT}.tar.gz" -O ; \
         curl -SsLf "https://downloads.bitnami.com/files/stacksmith/${COMPONENT}.tar.gz.sha256" -O ; \
