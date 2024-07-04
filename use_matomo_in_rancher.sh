@@ -22,13 +22,15 @@ sed -i "s/LogFormat \"%h/LogFormat \"%{X-Forwarded-For}i/g" /opt/bitnami/apache/
 # Prevent setting pk_ref cookie with an empty string; it is perceived as SQL injection attempt.
 
 rm -rf "/opt/bitnami/matomo/matomo.js"
-cp /opt/bitnami/matomo/patch/github-pr-22071/matomo.js /opt/bitnami/matomo/
+cp /opt/bitnami/matomo/github-pr-22071/matomo.js /opt/bitnami/matomo/
 rm -rf "/opt/bitnami/matomo/piwik.js"
-cp /opt/bitnami/matomo/patch/github-pr-22071/piwik.js /opt/bitnami/matomo/
+cp /opt/bitnami/matomo/github-pr-22071/piwik.js /opt/bitnami/matomo/
 rm -rf "/opt/bitnami/matomo/js/piwik.js"
-cp /opt/bitnami/matomo/patch/github-pr-22071/js/piwik.js /opt/bitnami/matomo/js/
+cp /opt/bitnami/matomo/github-pr-22071/js/piwik.js /opt/bitnami/matomo/js/
 rm -rf "/opt/bitnami/matomo/js/piwik.min.js"
-cp /opt/bitnami/matomo/patch/github-pr-22071/js/piwik.min.js /opt/bitnami/matomo/js/
+cp /opt/bitnami/matomo/github-pr-22071/js/piwik.min.js /opt/bitnami/matomo/js/
+
+rm -rf /opt/bitnami/matomo/github-pr-22071
 
 # fix file permissions
 

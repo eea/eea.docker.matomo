@@ -9,5 +9,6 @@ ENTRYPOINT [ "/opt/bitnami/scripts/matomo/entrypoint.sh" ]
 CMD [ "/opt/bitnami/scripts/matomo/run.sh" ]
 
 
+COPY patch /opt/bitnami/matomo/
 COPY run_* /usr/bin/
 COPY use_matomo_in_rancher.sh /
