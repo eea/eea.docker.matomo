@@ -6,7 +6,7 @@ pipeline {
   }
 
   environment {
-    GIT_NAME = "eea.docker.matomo "
+    GIT_NAME = "eea.docker.matomo"
     registry = "eeacms/matomo"
   }
   
