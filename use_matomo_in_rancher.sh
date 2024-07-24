@@ -23,6 +23,7 @@ sed -i "s/LogFormat \"%h/LogFormat \"%{X-Forwarded-For}i/g" /opt/bitnami/apache/
 
 cp /tmp/github-pr-22071/matomo.js /opt/bitnami/matomo/
 cp /tmp/github-pr-22071/matomo.js /bitnami/matomo/
+
 cp /tmp/github-pr-22071/piwik.js /opt/bitnami/matomo/
 cp /tmp/github-pr-22071/piwik.js /bitnami/matomo/
 cp /tmp/github-pr-22071/js/piwik.js /opt/bitnami/matomo/js/
@@ -31,10 +32,8 @@ cp /tmp/github-pr-22071/js/piwik.min.js /opt/bitnami/matomo/js/
 cp /tmp/github-pr-22071/js/piwik.min.js /bitnami/matomo/js/
 
 # fix file permissions
-
-chown -R daemon:root /opt/bitnami/matomo
+mkdir -p /opt/bitnami/tmp
+chown -R daemon:root /opt/bitnami/tmp
 chown -R daemon:root /opt/bitnami/php
-
-# for matomo 4.14.1
-rm -rf "/opt/bitnami/matomo/.spdx-matomo.json"
+chown -R daemon:root /bitnami/matomo
 
