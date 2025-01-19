@@ -1,6 +1,6 @@
-FROM bitnami/matomo:5.1.0
+FROM bitnami/matomo:5.2.1
 
-user root
+USER root
 
 COPY entrypoint.sh /opt/bitnami/scripts/matomo/entrypoint.sh
 
