@@ -2264,7 +2264,7 @@ if (typeof window.Matomo !== 'object') {
                 configTitle = '',
 
                 // Extensions to be treated as download links
-                configDownloadExtensions = ['7z','aac','apk','arc','arj','asc','asf','asx','avi','azw3','bin','csv','deb','dmg','doc','docx','epub','exe','flv','gif','gz','gzip','hqx','ibooks','jar','jpg','jpeg','js','md5','mobi','mp2','mp3','mp4','mpg','mpeg','mov','movie','msi','msp','odb','odf','odg','ods','odt','ogg','ogv','pdf','phps','png','ppt','pptx','qt','qtm','ra','ram','rar','rpm','rtf','sea','sha','sha256','sha512','sig','sit','tar','tbz','tbz2','bz','bz2','tgz','torrent','txt','wav','wma','wmv','wpd','xls','xlsx','xml','xz','z','zip'],
+                configDownloadExtensions = ['3mf','7z','aac','apk','arc','arj','asc','asf','asx','avi','azw3','bin','bz','bz2','csv','deb','dmg','doc','docx','epub','exe','flv','gif','gz','gzip','hqx','ibooks','jar','jpeg','jpg','js','md5','mobi','mov','movie','mp2','mp3','mp4','mpg','mpeg','msi','msp','obj','odb','odf','odg','ods','odt','ogg','ogv','pdf','phps','png','ply','ppt','pptx','qt','qtm','ra','ram','rar','rpm','rtf','sea','sha','sha256','sha512','sig','sit','stl','tar','tbz','tbz2','tgz','torrent','txt','wav','wma','wmv','wpd','xls','xlsx','xml','xz','z','zip'],
 
                 // Hosts or alias(es) to not treat as outlinks
                 configHostsAlias = [domainAlias],
@@ -3183,7 +3183,7 @@ if (typeof window.Matomo !== 'object') {
                 // currently this methods simply returns the requested values through a Promise
                 // In later versions it might require a user permission
                 navigatorAlias.userAgentData.getHighEntropyValues(
-                    ['brands', 'model', 'platform', 'platformVersion', 'uaFullVersion', 'fullVersionList']
+                    ['brands', 'model', 'platform', 'platformVersion', 'uaFullVersion', 'fullVersionList', 'formFactors']
                 ).then(function(ua) {
                     var i;
                     if (ua.fullVersionList) {
@@ -3694,10 +3694,10 @@ if (typeof window.Matomo !== 'object') {
                 }
 
                 return [
-                    false,
-                    false,
+                    '',
+                    '',
                     0,
-                    false
+                    ''
                 ];
             }
 
@@ -3905,10 +3905,10 @@ if (typeof window.Matomo !== 'object') {
                     campaignKeywordDetected,
                     attributionValues = {};
 
-                campaignNameDetected = attributionCookie[0] || '';
-                campaignKeywordDetected = attributionCookie[1] || '';
+                campaignNameDetected = attributionCookie[0];
+                campaignKeywordDetected = attributionCookie[1];
                 referralTs = attributionCookie[2];
-                referralUrl = attributionCookie[3] || '';
+                referralUrl = attributionCookie[3];
 
                 if (!hasIgnoreReferrerParameter(currentUrl) && !cookieSessionValue) {
                     // cookie 'ses' was not found: we consider this the start of a 'session'
@@ -3965,10 +3965,10 @@ if (typeof window.Matomo !== 'object') {
                         || campaignNameDetected.length) {
                         referralTs = nowTs;
                         attributionCookie = [
-                            campaignNameDetected || false,
-                            campaignKeywordDetected || false,
+                            campaignNameDetected,
+                            campaignKeywordDetected,
                             referralTs,
-                            purify(referralUrl.slice(0, referralUrlMaxLength)) || false
+                            purify(referralUrl.slice(0, referralUrlMaxLength))
                         ];
 
                         setCookie(cookieReferrerName, windowAlias.JSON.stringify(attributionCookie), configReferralCookieTimeout, configCookiePath, configCookieDomain, configCookieIsSecure, configCookieSameSite);
@@ -5346,7 +5346,7 @@ if (typeof window.Matomo !== 'object') {
              * @returns {string}
              */
             this.getAttributionCampaignName = function () {
-                return loadReferrerAttributionCookie()[0] || '';
+                return loadReferrerAttributionCookie()[0];
             };
 
             /**
@@ -5356,7 +5356,7 @@ if (typeof window.Matomo !== 'object') {
              * @returns {string}
              */
             this.getAttributionCampaignKeyword = function () {
-                return loadReferrerAttributionCookie()[1] || '';
+                return loadReferrerAttributionCookie()[1];
             };
 
             /**
@@ -5374,7 +5374,7 @@ if (typeof window.Matomo !== 'object') {
              * @returns {string} Raw URL, or empty string '' if no referrer currently set
              */
             this.getAttributionReferrerUrl = function () {
-                return loadReferrerAttributionCookie()[3] || '';
+                return loadReferrerAttributionCookie()[3];
             };
 
             /**
@@ -5536,7 +5536,7 @@ if (typeof window.Matomo !== 'object') {
              *       pair = pair.split('=');
              *       result[pair[0]] = decodeURIComponent(pair[1] || '');
              *     });
-             *     return JSON.stringify(result);
+             *     return new URLSearchParams(result).toString();
              *   });
              *
              * @param {Function} customRequestContentProcessingLogic
