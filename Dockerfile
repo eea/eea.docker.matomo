@@ -1,4 +1,4 @@
-FROM bitnami/matomo:5.2.1
+FROM bitnami/matomo:5.2.2
 
 USER root
 
