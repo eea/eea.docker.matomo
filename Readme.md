@@ -1,14 +1,14 @@
 
 # MATOMO for rancher 1.6, based on bitnami/matomo
 
-Based on 
-https://github.com/bitnami/containers/tree/6de10e059df92fcf0c82a69db03ce0ed95f8339b/bitnami/matomo/4/debian-11
 
 
 ## How to upgrade
 
+Check if entrypoint.sh was changed, as we are using it to add our code.
 
-Check what was updated between current version from https://github.com/bitnami/containers/tree/main/bitnami/matomo/4/debian-11 and https://github.com/bitnami/containers/tree/6de10e059df92fcf0c82a69db03ce0ed95f8339b/bitnami/matomo/4/debian-11
+https://github.com/bitnami/containers/blame/main/bitnami/matomo/5/debian-12/rootfs/opt/bitnami/scripts/matomo/entrypoint.sh
+
 
 ### Small/version differences
 
@@ -30,18 +30,29 @@ This repo was made from the bitnami repo, with the following differeces:
     b. add `/use_matomo_in_rancher.sh`
 
 
-3. In Dockerfile
-
-    a. Replace `bullseye` with `buster`
-
-    b. Replace `debian-11` with `debian-10`
-
-    c. Update `RUN install_packages` from last bitnami/matomo debian 10 code: https://github.com/bitnami/containers/tree/54cbc81cf48e126af9063c1e900dcabe00e3770f/bitnami/matomo/4/debian-10
-    
-    d. At the end, add the 2 `COPY` commands
 
 
-           COPY run_* /usr/bin/
-           COPY use_matomo_in_rancher.sh /
+### Patch
 
-4. Update `Readme.md` with the commit id
+Until ` Avoid empty string values in serialized referrer cookie #22071 ` bug is fixed, you need to update the js files.
+
+You need to fork matomo repository and rebase the branch `m21170` with the latest changes.
+
+You should re-minify the js files to make sure they were rebased correctly:
+
+
+  To install YUICompressor run:
+ 
+  ```bash
+  $ cd /path/to/piwik/js/
+  $ wget https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.zip
+  $ unzip yuicompressor-2.4.8.zip
+  ```
+
+  To compress the code containing the evil "eval", run:
+
+  ```bash
+  $ cd /path/to/piwik/js/
+  $ sed '/<DEBUG>/,/<\/DEBUG>/d' < piwik.js | sed 's/eval/replacedEvilString/' | java -jar yuicompressor-2.4.8.jar --type js --line-break 1000 | sed 's/replacedEvilString/eval/' | sed 's/^[/][*]/\/*!/' > piwik.min.js && cp piwik.min.js ../piwik.js && cp piwik.min.js ../matomo.js
+  ```
+
