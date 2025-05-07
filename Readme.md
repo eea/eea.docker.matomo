@@ -56,3 +56,16 @@ You should re-minify the js files to make sure they were rebased correctly:
   $ sed '/<DEBUG>/,/<\/DEBUG>/d' < piwik.js | sed 's/eval/replacedEvilString/' | java -jar yuicompressor-2.4.8.jar --type js --line-break 1000 | sed 's/replacedEvilString/eval/' | sed 's/^[/][*]/\/*!/' > piwik.min.js && cp piwik.min.js ../piwik.js && cp piwik.min.js ../matomo.js
   ```
 
+### Backup database with no visits/archives
+
+  ```bash
+    $ echo "show tables;" | mysql -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE | grep -v ^matomo_log_ | grep -v ^matomo_archive_ | grep -v ^Tables_in_eea | tr '\n' ' ' >  /var/lib/mysql/tablelist.txt
+    $ echo "show tables;" | mysql -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE | grep -E '^matomo_log_|^matomo_archive_' | grep -v ^Tables_in_eea | tr '\n' ' ' >  /var/lib/mysql/tablelist-data.txt
+    $ mysqldump -u root -p$MYSQL_ROOT_PASSWORD --add-drop-table $MYSQL_DATABASE $(cat /var/lib/mysql/tablelist.txt) > /var/lib/mysql/backup_$(date '+%F').sql
+    $ mysqldump -u root -p$MYSQL_ROOT_PASSWORD --add-drop-table --no-data  $MYSQL_DATABASE $(cat /var/lib/mysql/tablelist-data.txt)  >> /var/lib/mysql/backup_$(date '+%F').sql
+
+  ```
+
+
+
+
