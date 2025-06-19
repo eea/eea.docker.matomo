@@ -12,3 +12,4 @@ CMD [ "/opt/bitnami/scripts/matomo/run.sh" ]
 COPY patch/ /tmp/
 COPY run_* /usr/bin/
 COPY use_matomo_in_rancher.sh /
+COPY matomo_entra_sync.php /

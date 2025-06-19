@@ -1,5 +1,5 @@
 #!/bin/bash
 
 
-php /opt/bitnami/matomo/console loginldap:synchronize-users
+php /matomo_entra_sync.php
 
