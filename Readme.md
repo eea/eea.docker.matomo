@@ -66,6 +66,25 @@ You should re-minify the js files to make sure they were rebased correctly:
 
   ```
 
+## User syncrhonization with Entra ID
 
+The image contains a scheduled task to synchronize the local users with the Entra ID users in a specific group.
+User synchronization means that the users added to the specified AZURE_VIEW_GROUP are automatically added to the Matomo user database if they do not have a user. All users in the group are also granted view rights to all the Matomo sites (even to newly added sites).
 
+The script [matomo_entra_sync.php](matomo_entra_sync.php) uses the following environment variables, that have to be configured in the orchestrator:
 
+* AZURE_TENANT_ID - the tenant ID from Entra
+* AZURE_CLIENT_ID - the client ID of the Entra application
+* AZURE_CLIENT_SECRET - the secret of the Entra application
+* AZURE_VIEW_GROUP - the Entra group of the users to be synchronized
+
+The Entra ID application set up above needs to have read access to the Graph API to read users and groups.  
+
+The other environment variables should be already set up for Matomo:
+* MATOMO_DATABASE_HOST
+* MATOMO_DATABASE_USERNAME
+* MATOMO_DATABASE_PASSWORD
+* MATOMO_DATABASE_DBNAME
+* MATOMO_DATABASE_PORT - not generally included in the Matomo setup, but defaults to 3306
+
+To schedule, the existing [run_ldapsync.sh](run_ldapsync.sh) script is modified to start the php script.
