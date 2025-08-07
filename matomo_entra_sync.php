@@ -71,7 +71,7 @@ function getGroupId(string $token, string $groupName): ?string {
 // === Get Members of the Group ===
 function getGroupMembers(string $groupId, string $token): array {
     $members = [];
-    $url = "https://graph.microsoft.com/v1.0/groups/$groupId/members?\$select=mail,userPrincipalName";
+    $url = "https://graph.microsoft.com/v1.0/groups/$groupId/members?\$select=mail,userPrincipalName,id";
     $headers = ["Authorization: Bearer $token"];
 
     while ($url) {
@@ -83,13 +83,19 @@ function getGroupMembers(string $groupId, string $token): array {
         $response = curl_exec($ch);
         curl_close($ch);
 
-       $data = json_decode($response, true);
+        $data = json_decode($response, true);
         foreach ($data['value'] ?? [] as $user) {
-            $email = strtolower($user['mail'] ?? $user['userPrincipalName'] ?? '');
-            if ($email) {
-                $members[] = $email;
+            if (($user['@odata.type'] ?? '') === '#microsoft.graph.group') {
+                // Recursively get members of nested group
+                $members = array_merge($members, getGroupMembers($user['id'], $token));
+            } else {
+                $email = strtolower($user['mail'] ?? $user['userPrincipalName'] ?? '');
+                if ($email) {
+                    $members[] = $email;
+                }
             }
         }
+
         $url = $data['@odata.nextLink'] ?? null;
     }
 
