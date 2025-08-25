@@ -16,11 +16,11 @@ $clientSecret = requireEnv('AZURE_CLIENT_SECRET');
 $viewGroupName = requireEnv('AZURE_VIEW_GROUP');
 
 $dbConfig = [
-    'host' => requireEnv('MATOMO_DATABASE_HOST'),
-    'user' => requireEnv('MATOMO_DATABASE_USERNAME'),
+    'host' => requireEnv('MARIADB_HOST'),
+    'user' => requireEnv('MATOMO_DATABASE_USER'),
     'pass' => requireEnv('MATOMO_DATABASE_PASSWORD'),
     'name' => requireEnv('MATOMO_DATABASE_DBNAME'),
-    'port' => getenv('MATOMO_DATABASE_PORT') ?: '3306'
+    'port' => getenv('MARIADB_PORT_NUMBER') ?: '3306'
 ];
 
 $debugEnv = strtolower(getenv('SYNC_DEBUG') ?: 'false');

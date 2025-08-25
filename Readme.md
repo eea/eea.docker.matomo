@@ -82,10 +82,10 @@ The script [matomo_entra_sync.php](matomo_entra_sync.php) uses the following env
 The Entra ID application set up above needs to have read access to the Graph API to read users and groups.  
 
 The other environment variables should be already set up for Matomo:
-* MATOMO_DATABASE_HOST
-* MATOMO_DATABASE_USERNAME
+* MARIADB_HOST
+* MATOMO_DATABASE_USER
 * MATOMO_DATABASE_PASSWORD
 * MATOMO_DATABASE_DBNAME
-* MATOMO_DATABASE_PORT - not generally included in the Matomo setup, but defaults to 3306
+* MARIADB_PORT_NUMBER - defaults to 3306
 
 To schedule, the existing [run_ldapsync.sh](run_ldapsync.sh) script is modified to start the php script.
