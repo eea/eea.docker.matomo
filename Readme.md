@@ -77,7 +77,8 @@ The script [matomo_entra_sync.php](matomo_entra_sync.php) uses the following env
 * AZURE_CLIENT_ID - the client ID of the Entra application
 * AZURE_CLIENT_SECRET - the secret of the Entra application
 * AZURE_VIEW_GROUP - the Entra group of the users to be synchronized
-
+* ADMIN_EMAIL - a user e-mail to be avoided when deleting users that are not in Entra (optional, for a local backup user)
+* SYNC_DEBUG - enables verbose output (optional, true/false, default false)
 The Entra ID application set up above needs to have read access to the Graph API to read users and groups.  
 
 The other environment variables should be already set up for Matomo:

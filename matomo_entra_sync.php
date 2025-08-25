@@ -23,6 +23,12 @@ $dbConfig = [
     'port' => getenv('MATOMO_DATABASE_PORT') ?: '3306'
 ];
 
+$debugEnv = strtolower(getenv('SYNC_DEBUG') ?: 'false');
+$debug = in_array($debugEnv, ['1', 'true', 'yes'], true);
+
+// admin email to protect from deletion
+$adminEmail = getenv('ADMIN_EMAIL') ?: null;
+
 // === Microsoft Graph: Get Access Token ===
 function getAccessToken($tenantId, $clientId, $clientSecret): string {
     $url = "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token";
@@ -68,6 +74,58 @@ function getGroupId(string $token, string $groupName): ?string {
     return $data['value'][0]['id'] ?? null;
 }
 
+function getAllUsers(string $token): array {
+    global $debug;
+
+    $url = "https://graph.microsoft.com/v1.0/users";
+    $headers = [
+        "Authorization: Bearer $token",
+        "Accept: application/json"
+    ];
+
+    $users = [];
+
+    while ($url) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true
+        ]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if (!$response) {
+            break;
+        }
+
+        $data = json_decode($response, true);
+        if (!isset($data['value'])) {
+            break;
+        }
+
+        $pageUsers = $data['value'];
+
+        foreach ($pageUsers as $user) {
+            $displayName    = $user['displayName'] ?? 'N/A';
+            $principalName  = $user['userPrincipalName'] ?? 'N/A';
+            $email          = $user['mail'] ?? null;
+
+            if (!empty($debug)) {
+                print_r($user);
+            }
+
+            if ($email) {
+                $users[] = $email;
+            }
+        }
+
+        // Follow pagination if available
+        $url = $data['@odata.nextLink'] ?? null;
+    }
+
+    return $users;
+}
+
 // === Get Members of the Group ===
 function getGroupMembers(string $groupId, string $token): array {
     $members = [];
@@ -89,7 +147,7 @@ function getGroupMembers(string $groupId, string $token): array {
                 // Recursively get members of nested group
                 $members = array_merge($members, getGroupMembers($user['id'], $token));
             } else {
-                $email = strtolower($user['mail'] ?? $user['userPrincipalName'] ?? '');
+                $email = $user['mail'] ?? $user['userPrincipalName'] ?? '';
                 if ($email) {
                     $members[] = $email;
                 }
@@ -103,65 +161,86 @@ function getGroupMembers(string $groupId, string $token): array {
 }
 
 // === Create Missing Matomo Users ===
-function createMissingMatomoUsers(array $emails, array $dbConfig): void {
+function createMissingMatomoUsers(array $emails, array $dbConfig, bool $debug = false): void {
     $dsn = "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['name']}";
     $pdo = new PDO($dsn, $dbConfig['user'], $dbConfig['pass']);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $placeholders = implode(',', array_fill(0, count($emails), '?'));
-    $stmt = $pdo->prepare("SELECT LOWER(email) as email FROM matomo_user WHERE LOWER(email) IN ($placeholders)");
-    $stmt->execute($emails);
-    $existingEmails = array_column($stmt->fetchAll(), 'email');
-
-    $newUsers = array_diff($emails, $existingEmails);
     $inserted = 0;
+    $updated = 0;
 
-    $stmt = $pdo->prepare("INSERT INTO matomo_user (login, password, email, superuser_access, date_registered) VALUES (?, ?, ?, 0, NOW())");
-    foreach ($newUsers as $email) {
-        $login = $email;
-        $password = '1234';  // You should hash this in production
-        $stmt->execute([$login, $password, $email]);
-        echo "Created new Matomo user: $email\n";
-        $inserted++;
+    foreach ($emails as $email) {
+        // Check if the user already exists (case-insensitive)
+        $stmt = $pdo->prepare("SELECT email FROM matomo_user WHERE LOWER(email) = LOWER(?)");
+        $stmt->execute([$email]);
+        $existingEmail = $stmt->fetchColumn();
+
+        if ($existingEmail === false) {
+            // Insert new user
+            $login = $email;
+            $randomString = bin2hex(random_bytes(16));
+            $password = password_hash($randomString, PASSWORD_BCRYPT);
+            $stmt = $pdo->prepare("
+                INSERT INTO matomo_user (login, password, email, superuser_access, date_registered)
+                VALUES (?, ?, ?, 0, NOW())
+            ");
+            $stmt->execute([$login, $password, $email]);
+            echo "Created new Matomo user: $email\n";
+            $inserted++;
+        } else {
+            if ($existingEmail !== $email) {
+                // Update case difference
+                $stmt = $pdo->prepare("UPDATE matomo_user SET email = ? WHERE LOWER(email) = LOWER(?)");
+                $stmt->execute([$email, $email]);
+                echo "Updated email case: $existingEmail -> $email\n";
+                $updated++;
+            } else {
+                if ($debug) {
+                    echo "User already exists: $email\n";
+                }
+            }
+        }
     }
 
-    echo "$inserted user(s) created in matomo_user.\n";
+    echo "$inserted user(s) created, $updated user(s) updated in matomo_user.\n";
 }
 
-// === Sync Users to Matomo DB ===
-function syncToMatomoDB(array $emails, array $dbConfig): void {
+
+
+function grantAccessToAll(array $emails, array $dbConfig): void {
     $dsn = "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['name']}";
     $pdo = new PDO($dsn, $dbConfig['user'], $dbConfig['pass']);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $placeholders = implode(',', array_fill(0, count($emails), '?'));
-    $stmt = $pdo->prepare("SELECT login, LOWER(email) as email FROM matomo_user WHERE LOWER(email) IN ($placeholders)");
-    $stmt->execute($emails);
-    $users = [];
-    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        $users[$row['email']] = $row['login'];
-    }
-
+    // Get all site IDs once
     $siteStmt = $pdo->query("SELECT idsite FROM matomo_site");
     $siteIds = $siteStmt->fetchAll(PDO::FETCH_COLUMN);
 
     $inserted = 0;
+
+    $userStmt = $pdo->prepare("SELECT login, email FROM matomo_user WHERE LOWER(email) = LOWER(?)");
     $checkStmt = $pdo->prepare("SELECT 1 FROM matomo_access WHERE login = ? AND idsite = ?");
     $insertStmt = $pdo->prepare("INSERT INTO matomo_access (login, idsite, access) VALUES (?, ?, 'view')");
 
     foreach ($emails as $email) {
-        $login = $users[$email] ?? null;
-        if (!$login) {
-            echo "Email $email not found in matomo_user  ^`^t skipping\n";
+        // Lookup user by email (case-insensitive)
+        $userStmt->execute([$email]);
+        $row = $userStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            echo "Warn: Email $email not found in matomo_user — skipping\n";
             continue;
         }
 
+        $login = $row['login'];
+
+        // Grant access for each site if not already present
         foreach ($siteIds as $siteId) {
             $checkStmt->execute([$login, $siteId]);
             if (!$checkStmt->fetch()) {
                 $insertStmt->execute([$login, $siteId]);
-                echo "Granted 'view' to $login on site $siteId\n";
                 $inserted++;
+                echo "Granted 'view' to $login on site $siteId\n";
             }
         }
     }
@@ -169,9 +248,107 @@ function syncToMatomoDB(array $emails, array $dbConfig): void {
     echo "\nSync complete. $inserted access records inserted.\n";
 }
 
+function deleteMissingMatomoUsers(array $allowedEmails, array $dbConfig): void {
+    $dsn = "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['name']}";
+    $pdo = new PDO($dsn, $dbConfig['user'], $dbConfig['pass']);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Normalize allowed emails to lowercase for comparison
+    $allowedLower = array_map('strtolower', $allowedEmails);
+
+    $deletedCount = 0;
+
+    // Fetch all users in Matomo, including superuser flag
+    $stmt = $pdo->query("SELECT login, email, superuser_access FROM matomo_user");
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($users as $user) {
+        $email = $user['email'];
+        $login = $user['login'];
+        $isSuperuser = (int)$user['superuser_access'] === 1;
+
+        if (!in_array(strtolower($email), $allowedLower, true)) {
+            if ($isSuperuser) {
+                echo "Skipping superuser: $email (login=$login)\n";
+                continue;
+            }
+
+            // Fetch existing access records before deletion
+            $accessStmt = $pdo->prepare("SELECT idsite, access FROM matomo_access WHERE login = ?");
+            $accessStmt->execute([$login]);
+            $accessRecords = $accessStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($accessRecords) {
+                $siteIds = implode(", ", array_column($accessRecords, 'idsite'));
+                echo "Logging access for $email before deletion: Site IDs: $siteIds\n";
+            }
+
+            // Delete related access records first
+            $delAccessStmt = $pdo->prepare("DELETE FROM matomo_access WHERE login = ?");
+            $delAccessStmt->execute([$login]);
+
+            // Delete user itself
+            $delUserStmt = $pdo->prepare("DELETE FROM matomo_user WHERE login = ?");
+            $delUserStmt->execute([$login]);
+
+            $deletedCount++;
+            echo "Deleted Matomo user: $email (login=$login)\n";
+        }
+    }
+
+    echo "\nCleanup complete. $deletedCount user(s) deleted from matomo_user.\n";
+}
+
+function getGroupList(string $token): ?string
+{
+    global $debug;
+
+    $url = "https://graph.microsoft.com/v1.0/groups";
+    $headers = [
+        "Authorization: Bearer $token",
+        "Accept: application/json"
+    ];
+
+    $groups = [];
+
+    while ($url) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true
+        ]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if (!$response) {
+            break;
+        }
+
+        $data = json_decode($response, true);
+        if (!isset($data['value'])) {
+            break;
+        }
+
+        $pageGroups = $data['value'];
+        $groups = array_merge($groups, $pageGroups);
+
+        // Print each group's info if debug is enabled
+        if (!empty($debug)) {
+            foreach ($pageGroups as $g) {
+                print_r($g);
+            }
+        }
+
+        // Get next page link if it exists
+        $url = $data['@odata.nextLink'] ?? null;
+    }
+
+    return !empty($groups) ? $groups[0]['id'] : null;
+}
+
 // === Main Logic ===
 function main() {
-    global $tenantId, $clientId, $clientSecret, $dbConfig, $viewGroupName;
+    global $tenantId, $clientId, $clientSecret, $dbConfig, $viewGroupName, $adminEmail;
 
     echo "Authenticating to Microsoft Graph...\n";
     $token = getAccessToken($tenantId, $clientId, $clientSecret);
@@ -181,25 +358,49 @@ function main() {
         return;
     }
 
+//    echo "Fetching groups...\n";
+//    getGroupList($token);
+
+    echo "Fetching users...\n";
+    $allUsers = getAllUsers($token);
+    if (empty($allUsers)) {
+        echo "No users found in Entra ID.\n";
+        return;
+    }
+
+    // Detect and remove duplicates
+    $counts = array_count_values(array_map('strtolower', $allUsers));
+    $duplicates = array_keys(array_filter($counts, fn($count) => $count > 1));
+    if (!empty($duplicates)) {
+        echo "Warn: Duplicates: " . implode(", ", $duplicates) . "\n";
+        $allUsers = array_filter($allUsers, fn($email) => !in_array(strtolower($email), $duplicates));
+    }
+
+    echo "Checking for new users...\n";
+    createMissingMatomoUsers($allUsers, $dbConfig);
+
     echo "Fetching group ID for '$viewGroupName'...\n";
     $groupId = getGroupId($token, $viewGroupName);
     if (!$groupId) {
         echo "Group '$viewGroupName' not found in Entra ID.\n";
         return;
+    } else {
+        echo "Fetching group members of .\n";
+        $staffUsers = getGroupMembers($groupId, $token);
+        if (empty($staffUsers)) {
+            echo "Warning! No members found in '$viewGroupName'.\n";
+            return;
+        }
+
+        echo "Matching users to Matomo and syncing access for " . count($staffUsers) . " emails...\n";
+        grantAccessToAll($staffUsers, $dbConfig);
     }
 
-    echo "Fetching group members...\n";
-    $emails = getGroupMembers($groupId, $token);
-    if (empty($emails)) {
-        echo "No members found in '$viewGroupName'.\n";
-        return;
-    }
+    // add the admin email to the list
+    $allUsers[] = $adminEmail;
 
-    echo "Checking for new users...\n";
-    createMissingMatomoUsers($emails, $dbConfig);
-
-    echo "Matching users to Matomo and syncing access for " . count($emails) . " emails...\n";
-    syncToMatomoDB($emails, $dbConfig);
+    echo "Deleting users not found in Entra...\n";
+    deleteMissingMatomoUsers($allUsers, $dbConfig);
 }
 
 main();
