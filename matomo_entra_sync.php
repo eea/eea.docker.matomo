@@ -19,7 +19,7 @@ $dbConfig = [
     'host' => requireEnv('MARIADB_HOST'),
     'user' => requireEnv('MATOMO_DATABASE_USER'),
     'pass' => requireEnv('MATOMO_DATABASE_PASSWORD'),
-    'name' => requireEnv('MATOMO_DATABASE_DBNAME'),
+    'name' => requireEnv('MATOMO_DATABASE_NAME'),
     'port' => getenv('MARIADB_PORT_NUMBER') ?: '3306'
 ];
 
