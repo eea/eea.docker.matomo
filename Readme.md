@@ -68,8 +68,13 @@ You should re-minify the js files to make sure they were rebased correctly:
 
 ## User syncrhonization with Entra ID
 
-The image contains a scheduled task to synchronize the local users with the Entra ID users in a specific group.
-User synchronization means that the users added to the specified AZURE_VIEW_GROUP are automatically added to the Matomo user database if they do not have a user. All users in the group are also granted view rights to all the Matomo sites (even to newly added sites).
+The image contains a scheduled task to synchronize the local users with the Entra ID users. The steps are
+* Create in Matomo all the new users from Entra ID, without access rights
+* Update in Matomo all the e-mails with different case
+* For the users in the specified AZURE_VIEW_GROUP Entra group (and its subgroups), add view rights to all the Matomo sites. This applies also to newly added sites.
+* Delete from Matomo all the users that are not in Entra anymore
+
+The user identification is only possible via the e-mail field. 
 
 The script [matomo_entra_sync.php](matomo_entra_sync.php) uses the following environment variables, that have to be configured in the orchestrator:
 
@@ -82,10 +87,10 @@ The script [matomo_entra_sync.php](matomo_entra_sync.php) uses the following env
 The Entra ID application set up above needs to have read access to the Graph API to read users and groups.  
 
 The other environment variables should be already set up for Matomo:
-* MARIADB_HOST
+* MATOMO_DATABASE_HOST
 * MATOMO_DATABASE_USER
 * MATOMO_DATABASE_PASSWORD
-* MATOMO_DATABASE_DBNAME
-* MARIADB_PORT_NUMBER - defaults to 3306
+* MATOMO_DATABASE_NAME
+* MATOMO_DATABASE_PORT_NUMBER - defaults to 3306
 
 To schedule, the existing [run_ldapsync.sh](run_ldapsync.sh) script is modified to start the php script.
