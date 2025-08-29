@@ -13,3 +13,4 @@ COPY patch/ /tmp/
 COPY run_* /usr/bin/
 COPY use_matomo_in_rancher.sh /
 COPY matomo_entra_sync.php /
+COPY patch_saml.sh /

@@ -7,6 +7,9 @@ set -o nounset
 set -o pipefail
 # set -o xtrace # Uncomment this line for debugging purposes
 
+# Run hotfix for LoginSaml
+/patch_saml.sh
+
 # Load Matomo environment
 . /opt/bitnami/scripts/matomo-env.sh
 
