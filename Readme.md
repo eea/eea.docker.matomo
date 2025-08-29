@@ -29,7 +29,7 @@ This repo was made from the bitnami repo, with the following differeces:
     
     b. add `/use_matomo_in_rancher.sh`
 
-
+    c. added `/patch.saml.sh` to fix a "Class "OneLogin\\Saml2\\Constants" not found" error
 
 
 ### Patch
