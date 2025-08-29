@@ -32,6 +32,7 @@ for vendor in onelogin robrichards; do
     if [ -d "$PLUGIN_DIR/vendor/$vendor" ]; then
       echo "Copying $vendor to $MATOMO_VENDOR_DIR..."
       cp -r "$PLUGIN_DIR/vendor/$vendor" "$MATOMO_VENDOR_DIR/"
+      chown -R daemon:root "$MATOMO_VENDOR_DIR/$vendor"
     else
       echo "Warning: $PLUGIN_DIR/vendor/$vendor does not exist, skipping."
     fi
@@ -64,6 +65,7 @@ if [ ${#missing_lines[@]} -gt 0 ]; then
     }
     {print}
   ' "$CONFIG_FILE" > "$tmpfile" && mv "$tmpfile" "$CONFIG_FILE"
+  chown daemon:root "$CONFIG_FILE"  
 fi
 
 echo "Patching LoginSaml finished"
