@@ -59,10 +59,10 @@ You should re-minify the js files to make sure they were rebased correctly:
 ### Backup database with no visits/archives
 
   ```bash
-    $ echo "show tables;" | mysql -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE | grep -v ^matomo_log_ | grep -v ^matomo_archive_ | grep -v ^Tables_in_eea | tr '\n' ' ' >  /var/lib/mysql/tablelist.txt
-    $ echo "show tables;" | mysql -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE | grep -E '^matomo_log_|^matomo_archive_' | grep -v ^Tables_in_eea | tr '\n' ' ' >  /var/lib/mysql/tablelist-data.txt
-    $ mysqldump -u root -p$MYSQL_ROOT_PASSWORD --add-drop-table $MYSQL_DATABASE $(cat /var/lib/mysql/tablelist.txt) > /var/lib/mysql/backup_$(date '+%F').sql
-    $ mysqldump -u root -p$MYSQL_ROOT_PASSWORD --add-drop-table --no-data  $MYSQL_DATABASE $(cat /var/lib/mysql/tablelist-data.txt)  >> /var/lib/mysql/backup_$(date '+%F').sql
+    $ echo "show tables;" | mysql -p$MARIADB_ROOT_PASSWORD $MARIADB_DATABASE | grep -v ^matomo_log_ | grep -v ^matomo_archive_ | grep -v ^Tables_in_eea | tr '\n' ' ' >  /var/lib/mysql/tablelist.txt
+    $ echo "show tables;" | mysql -p$MARIADB_ROOT_PASSWORD $MARIADB_DATABASE | grep -E '^matomo_log_|^matomo_archive_' | grep -v ^Tables_in_eea | tr '\n' ' ' >  /var/lib/mysql/tablelist-data.txt
+    $ mysqldump -u root -p$MARIADB_ROOT_PASSWORD --add-drop-table $MARIADB_DATABASE $(cat /var/lib/mysql/tablelist.txt) > /var/lib/mysql/backup_$(date '+%F').sql
+    $ mysqldump -u root -p$MARIADB_ROOT_PASSWORD --add-drop-table --no-data  $MARIADB_DATABASE $(cat /var/lib/mysql/tablelist-data.txt)  >> /var/lib/mysql/backup_$(date '+%F').sql
 
   ```
 
