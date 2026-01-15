@@ -33,7 +33,7 @@ cp /tmp/github-pr-22071/js/piwik.min.js /bitnami/matomo/js/
 
 # fix file permissions
 mkdir -p /opt/bitnami/tmp
-chown -R daemon:root /opt/bitnami/tmp
-chown -R daemon:root /opt/bitnami/php
-chown -R daemon:root /bitnami/matomo
+chown -R daemon:daemon /opt/bitnami/tmp
+chown -R daemon:daemon /opt/bitnami/php
+chown -R daemon:daemon /bitnami/matomo
 
