@@ -11,7 +11,15 @@ fi
 
 if [ -n "$EXCLUDEIDSITE" ]; then
   echo "Received parameter Exclude Id Site $EXCLUDEIDSITE, will now try to get the list of site ids and run the archiving on it"
-  list=$(/opt/bitnami/php/bin/php -q  /bitnami/matomo/console climulti:request -q --matomo-domain='matomo' --superuser 'module=API&method=SitesManager.getAllSites&filter_limit=-1'| grep idsite | awk -F'<|>' '{print $3}' |  tr '\n' ',')
+  listall=$(/opt/bitnami/php/bin/php -q  /bitnami/matomo/console climulti:request -q --matomo-domain='matomo' --superuser 'module=API&method=SitesManager.getAllSites&filter_limit=-1'| grep idsite | awk -F'<|>' '{print $3}')
+  list=""
+  excludelist=",$EXCLUDEIDSITE,"
+  for i in $(echo -e "$listall"); do
+     if [[ ! "$excludelist" == *",$i,"* ]]; then
+        list="${list}${i},"
+        fi
+   done     
+   
   echo "Got this list of sites: $list"
 fi
 
