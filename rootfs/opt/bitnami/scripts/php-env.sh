@@ -72,8 +72,8 @@ export PHP_FPM_LISTEN_ADDRESS="${PHP_FPM_LISTEN_ADDRESS:-}"
 export PATH="${PHP_FPM_SBIN_DIR}:${PHP_BIN_DIR}:${BITNAMI_ROOT_DIR}/common/bin:${PATH}"
 
 # System users (when running with a privileged user)
-export PHP_FPM_DAEMON_USER="daemon"
-export PHP_FPM_DAEMON_GROUP="daemon"
+export PHP_FPM_DAEMON_USER="root"
+export PHP_FPM_DAEMON_GROUP="root"
 
 # PHP configuration
 export PHP_DATE_TIMEZONE="${PHP_DATE_TIMEZONE:-}"

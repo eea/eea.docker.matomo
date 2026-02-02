@@ -59,9 +59,9 @@ export APACHE_PID_FILE="${APACHE_TMP_DIR}/httpd.pid"
 export PATH="${APACHE_BIN_DIR}:${BITNAMI_ROOT_DIR}/common/bin:${PATH}"
 
 # System users (when running with a privileged user)
-export APACHE_DAEMON_USER="daemon"
+export APACHE_DAEMON_USER="root"
 export WEB_SERVER_DAEMON_USER="$APACHE_DAEMON_USER"
-export APACHE_DAEMON_GROUP="daemon"
+export APACHE_DAEMON_GROUP="root"
 export WEB_SERVER_DAEMON_GROUP="$APACHE_DAEMON_GROUP"
 export WEB_SERVER_GROUP="$APACHE_DAEMON_GROUP"
 

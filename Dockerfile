@@ -66,7 +66,6 @@ USER root
 
 COPY entrypoint.sh /opt/bitnami/scripts/matomo/entrypoint.sh
 
-USER 1001
 ENTRYPOINT [ "/opt/bitnami/scripts/matomo/entrypoint.sh" ]
 CMD [ "/opt/bitnami/scripts/matomo/run.sh" ]
 
