@@ -1,5 +1,5 @@
 
-# MATOMO for rancher 1.6, based on bitnami/matomo
+# MATOMO for rancher 1.6, based on matomo:fpm-alpine
 
 
 
@@ -66,7 +66,7 @@ You should re-minify the js files to make sure they were rebased correctly:
 
   ```
 
-## User syncrhonization with Entra ID
+## User synchronization with Entra ID
 
 The image contains a scheduled task to synchronize the local users with the Entra ID users. The steps are
 * Create in Matomo all the new users from Entra ID, without access rights

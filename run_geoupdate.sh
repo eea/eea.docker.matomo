@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ -d "/geoupdate" ] && [ -f "/geoupdate/GeoLite2-City.mmdb" ]; then
  cp /geoupdate/GeoLite2-City.mmdb /opt/bitnami/matomo/misc/

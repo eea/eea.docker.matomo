@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 php /matomo_entra_sync.php
