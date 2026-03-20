@@ -88,9 +88,9 @@ The Entra ID application set up above needs to have read access to the Graph API
 
 The other environment variables should be already set up for Matomo:
 * MATOMO_DATABASE_HOST
-* MATOMO_DATABASE_USER
+* MATOMO_DATABASE_USERNAME
 * MATOMO_DATABASE_PASSWORD
-* MATOMO_DATABASE_NAME
-* MATOMO_DATABASE_PORT_NUMBER - defaults to 3306
+* MATOMO_DATABASE_DBNAME
+* MATOMO_DATABASE_PORT - defaults to 3306
 
 To schedule, the existing [run_ldapsync.sh](run_ldapsync.sh) script is modified to start the php script.

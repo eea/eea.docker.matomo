@@ -9,28 +9,16 @@ LABEL org.opencontainers.image.description="Custom Matomo image based on officia
 ENV MATOMO_CONFIG_FILE=/var/www/html/config/config.ini.php \
     PATH="/usr/local/bin:$PATH"
 
-COPY patch/ /tmp/
+COPY patch/github-pr-22071/ /usr/src/matomo/
 COPY run_* /usr/bin/
-COPY use_matomo_in_rancher.sh /
 COPY matomo_entra_sync.php /
 
-RUN chmod +x /use_matomo_in_rancher.sh \
-    /matomo_entra_sync.php \
+RUN chmod +x /matomo_entra_sync.php \
     /usr/bin/run_*
-
-COPY entrypoint.sh /usr/local/bin/custom-entrypoint.sh
-RUN chmod +x /usr/local/bin/custom-entrypoint.sh
-
-USER root
-RUN chown -R www-data:www-data /usr/src/matomo
 
 EXPOSE 9000
 
-# Switch to Matomo user (same as official image)
 USER www-data
-
-# Use custom entrypoint
-ENTRYPOINT ["/usr/local/bin/custom-entrypoint.sh"]
 
 # Default CMD from official image
 CMD ["php-fpm"]

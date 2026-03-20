@@ -20,7 +20,7 @@ $dbConfig = [
     'user' => requireEnv('MATOMO_DATABASE_USERNAME'),
     'pass' => requireEnv('MATOMO_DATABASE_PASSWORD'),
     'name' => requireEnv('MATOMO_DATABASE_DBNAME'),
-    'port' => getenv('MATOMO_DATABASE_PORT_NUMBER') ?: '3306'
+    'port' => getenv('MATOMO_DATABASE_PORT') ?: '3306'
 ];
 
 $debugEnv = strtolower(getenv('SYNC_DEBUG') ?: 'false');

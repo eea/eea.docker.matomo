@@ -1,6 +1,5 @@
 #!/bin/sh
 
 if [ -d "/geoupdate" ] && [ -f "/geoupdate/GeoLite2-City.mmdb" ]; then
- cp /geoupdate/GeoLite2-City.mmdb /opt/bitnami/matomo/misc/
- chown daemon:daemon /opt/bitnami/matomo/misc/GeoLite2-City.mmdb
+  cp /geoupdate/GeoLite2-City.mmdb /var/www/html/misc/GeoLite2-City.mmdb
 fi
