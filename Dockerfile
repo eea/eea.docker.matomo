@@ -10,6 +10,7 @@ ENV MATOMO_CONFIG_FILE=/var/www/html/config/config.ini.php \
     PATH="/usr/local/bin:$PATH"
 
 COPY patch/github-pr-22071/ /usr/src/matomo/
+COPY logos/ /usr/src/matomo/misc/user/
 COPY run_* /usr/bin/
 COPY matomo_entra_sync.php /
 
