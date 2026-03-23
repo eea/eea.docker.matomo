@@ -19,7 +19,5 @@ RUN chmod +x /matomo_entra_sync.php \
 
 EXPOSE 9000
 
-USER www-data
-
 # Default CMD from official image
 CMD ["php-fpm"]
