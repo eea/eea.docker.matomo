@@ -17,6 +17,10 @@ COPY matomo_entra_sync.php /
 RUN chmod +x /matomo_entra_sync.php \
     /usr/bin/run_*
 
+# disable cron
+RUN rm -f /usr/sbin/crond
+RUN ln -sf /bin/true /usr/sbin/crond
+
 EXPOSE 9000
 
 # Default CMD from official image
