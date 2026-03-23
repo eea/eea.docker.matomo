@@ -1,6 +1,6 @@
 #!/bin/sh
 
-/usr/bin/run_archive_prepare.sh
+/usr/bin/run_env_prepare.sh
 
 CONCURRENT_ARCHIVERS=${CONCURRENT_ARCHIVERS:-8}
 CONCURRENT_REQS_PER_WEBSITE=${CONCURRENT_REQS_PER_WEBSITE:-6}

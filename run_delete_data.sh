@@ -1,5 +1,6 @@
 #!/bin/sh
 
+/usr/bin/run_env_prepare.sh
 
 if [ -n "$DAYS_TO_KEEP" ] && [ -n "$SITE_TO_DELETE" ]; then
 
