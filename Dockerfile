@@ -6,8 +6,13 @@ LABEL org.opencontainers.image.description="Custom Matomo image based on officia
       org.opencontainers.image.documentation="https://github.com/eea/eea.docker.matomo/blob/master/Readme.md" \
       org.opencontainers.image.vendor="EEA"
 
+USER 1001
+
 COPY patch/github-pr-22071/ /usr/src/matomo/
 COPY logos/ /usr/src/matomo/misc/user/
+
+USER root
+
 COPY run_* /usr/bin/
 COPY matomo_entra_sync.php /
 
