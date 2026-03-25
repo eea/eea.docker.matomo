@@ -22,8 +22,3 @@ RUN chmod +x /matomo_entra_sync.php \
 # disable cron
 RUN rm -f /usr/sbin/crond
 RUN ln -sf /bin/true /usr/sbin/crond
-
-EXPOSE 9000
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
