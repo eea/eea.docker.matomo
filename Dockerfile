@@ -20,8 +20,7 @@ RUN chmod +x /matomo_entra_sync.php \
     /usr/bin/run_*
 
 # disable cron
-RUN rm -f /usr/sbin/crond
-RUN ln -sf /bin/true /usr/sbin/crond
+#RUN rm -f /usr/sbin/crond
+#RUN ln -sf /bin/true /usr/sbin/crond
 
-COPY docker-entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+
