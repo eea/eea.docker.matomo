@@ -5,32 +5,13 @@
 
 ## How to upgrade
 
-Check if entrypoint.sh was changed, as we are using it to add our code.
-
-https://github.com/bitnami/containers/blame/main/bitnami/matomo/5/debian-12/rootfs/opt/bitnami/scripts/matomo/entrypoint.sh
-
-
-### Small/version differences
-
-No code updates, only version updates
-
-1. Update the code with the small updates ( do not update any debian OS related version)
-2. Fix the commit id in the `Readme.md` file
-
 ### Code upgrades
 
-This repo was made from the bitnami repo, with the following differeces:
+This repo was made from the matomo:fpm-alpine repo, with the following differences:
 
-1. Added our scripts 
-
-2. Update `./rootfs/opt/bitnami/scripts/matomo/entrypoint.sh`
-
-    a. Update `if` line to support `run_` docker commands
-    
-    b. add `/use_matomo_in_rancher.sh`
-
-
-
+1. Added our scripts (run_*, [matomo_entra_sync.php](matomo_entra_sync.php))
+2. Added logos into /usr/src/matomo/misc/user/
+3. Added the JS patch below and an automatic patch to config/manifest.inc.php with the new file size and sha256 hash 
 
 ### Patch
 
