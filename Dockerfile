@@ -6,6 +6,10 @@ LABEL org.opencontainers.image.description="Custom Matomo image based on officia
       org.opencontainers.image.documentation="https://github.com/eea/eea.docker.matomo/blob/master/Readme.md" \
       org.opencontainers.image.vendor="EEA"
 
+ENV PHP_MAX_EXECUTION_TIME=120
+ENV PHP_MAX_INPUT_TIME=60
+
+COPY conf.d/zz-timeouts.ini /usr/local/etc/php/conf.d/zz-timeouts.ini
 COPY patch/github-pr-22071/ /usr/src/matomo/
 COPY logos/* /usr/src/matomo/misc/user/
 COPY run_* /usr/bin/
