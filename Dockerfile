@@ -1,7 +1,7 @@
-FROM docker.io/matomo:5.8.0-fpm-alpine
+FROM docker.io/matomo:5.9.0-fpm-alpine
 
 LABEL org.opencontainers.image.description="Custom Matomo image based on official fpm-alpine" \
-      org.opencontainers.image.version="5.7.1" \
+      org.opencontainers.image.version="5.9.0" \
       org.opencontainers.image.title="matomo" \
       org.opencontainers.image.documentation="https://github.com/eea/eea.docker.matomo/blob/master/Readme.md" \
       org.opencontainers.image.vendor="EEA"
