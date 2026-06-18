@@ -1,4 +1,4 @@
-FROM docker.io/matomo:5.10.1-fpm-alpine
+FROM docker.io/matomo:5.11.2-fpm-alpine
 
 LABEL org.opencontainers.image.description="Custom Matomo image based on official fpm-alpine" \
       org.opencontainers.image.version="5.10.0" \
