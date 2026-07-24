@@ -42,4 +42,5 @@ RUN set -eux; \
     rm -f /usr/sbin/crond; \
     ln -sf /bin/true /usr/sbin/crond
 
-
+# install fcgi for healthcheck
+RUN apk add --no-cache fcgi 
