@@ -2,63 +2,6 @@ FROM php:8.4-fpm-alpine
 
 ENV PHP_MEMORY_LIMIT=256M
 
-# rebuild PHP from the 8.4.27 security release over the base image's PHP,
-# reusing the base image's configure options and build flags
-ENV PHP_VERSION=8.4.27
-ENV PHP_URL="https://www.php.net/distributions/php-8.4.27.tar.gz" PHP_SHA256="5bafed9994c1a49796b25b5f61c22c9183bfe046b6acc7b363842d03c77f972f"
-
-RUN set -eux; \
-	\
-	apk add --no-cache --virtual .php-build-deps \
-		$PHPIZE_DEPS \
-		argon2-dev \
-		coreutils \
-		curl-dev \
-		gnu-libiconv-dev \
-		libsodium-dev \
-		libxml2-dev \
-		linux-headers \
-		oniguruma-dev \
-		openssl-dev \
-		readline-dev \
-		sqlite-dev \
-		xz \
-	; \
-	\
-# PHP_UNAME contains spaces, so it is stripped here and passed explicitly to configure
-	configureOptions="$(php-config --configure-options | sed 's/ PHP_UNAME=.* PHP_BUILD_PROVIDER=/ PHP_BUILD_PROVIDER=/')"; \
-	\
-	cd /usr/src; \
-	curl -fsSL -o php.tar.gz "$PHP_URL"; \
-	echo "$PHP_SHA256 *php.tar.gz" | sha256sum -c -; \
-# docker-php-source (used by docker-php-ext-install) expects /usr/src/php.tar.xz
-	gzip -dc php.tar.gz | xz -T0 > php.tar.xz; \
-	rm php.tar.gz; \
-	\
-	docker-php-source extract; \
-	cd /usr/src/php; \
-	export \
-		CFLAGS="$PHP_CFLAGS" \
-		CPPFLAGS="$PHP_CPPFLAGS" \
-		LDFLAGS="$PHP_LDFLAGS" \
-	; \
-	./configure $configureOptions PHP_UNAME='Linux - Docker'; \
-	make -j "$(nproc)"; \
-	find -type f -name '*.a' -delete; \
-	make install; \
-	find /usr/local -type f -perm '/0111' -exec sh -euxc ' \
-		strip --strip-all "$@" || : \
-	' -- '{}' +; \
-	make clean; \
-	cp -v php.ini-* "$PHP_INI_DIR/"; \
-	cd /; \
-	docker-php-source delete; \
-	\
-	apk del --no-network .php-build-deps; \
-	\
-	php --version | grep -q "^PHP $PHP_VERSION "; \
-	php-fpm --version | grep -q "^PHP $PHP_VERSION "
-
 RUN set -ex; \
 	\
 	apk add --no-cache --virtual .build-deps \
@@ -114,7 +57,7 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-ENV MATOMO_VERSION=5.14.1
+ENV MATOMO_VERSION 5.14.2
 
 RUN set -ex; \
 	apk add --no-cache --virtual .fetch-deps \
@@ -144,8 +87,6 @@ VOLUME /var/www/html
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
-
-
 
 
 LABEL org.opencontainers.image.description="Custom Matomo image based on official fpm-alpine" \
